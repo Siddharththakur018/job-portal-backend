@@ -108,7 +108,7 @@ exports.loginUser = async (req, res) => {
 
 exports.me = async (req, res) => {
   try {
-    if (!req.user.sessionId) {
+    if (!req.user.userId) {
       return res.status(401).json({ message: "Not Authenticated" });
     }
     const user = await User.findById(req.session.userId).select(
