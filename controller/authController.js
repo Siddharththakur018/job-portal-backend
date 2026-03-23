@@ -2,6 +2,7 @@ const User = require("../model/authModel");
 const bcrypt = require("bcryptjs");
 const saltRound = 10;
 const sendOTPEmail = require("../utils/sendMail");
+const jwt = require("jsonwebtoken");
 
 exports.registerUser = async (req, res) => {
   try {
@@ -69,6 +70,7 @@ exports.verifyOtp = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -89,10 +91,15 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ message: "Wrong password" });
     }
 
-    req.session.userId = user._id;
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" },
+    );
 
     return res.status(200).json({
       message: "Login successful",
+      token,
       user: {
         id: user._id,
         name: user.name,
@@ -101,38 +108,24 @@ exports.loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ message: error.message });
   }
 };
 
 exports.me = async (req, res) => {
   try {
-    if (!req.user.userId) {
-      return res.status(401).json({ message: "Not Authenticated" });
-    }
-    const user = await User.findById(req.session.userId).select(
-      "-password -otp -otpExpiry",
-    );
+    const user = await User.findById(req.user.id).select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User not found!" });
     }
 
-    return res.status(200).json({ user });
+    res.json({ user });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
 exports.logoutUser = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ message: "Logout failed" });
-    }
-
-    res.clearCookie("sid");
-    res.json({ message: "Logged out successfully" });
-  });
+  res.json({ message: "Logout successful (client should delete token)" });
 };

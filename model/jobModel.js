@@ -65,12 +65,11 @@ const jobSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-jobSchema.pre("save", function (next) {
+jobSchema.pre("save", function () {
   if (this.isModified("title")) {
     this.slug =
       slugify(this.title, { lower: true, strict: true }) + "-" + Date.now();
   }
-  next();
 });
 
 module.exports = mongoose.model("Job", jobSchema);

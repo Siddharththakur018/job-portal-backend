@@ -6,7 +6,7 @@ const applyToJob = async (req, res) => {
     const jobId = req.params.jobId;
     const existingApplication = await Application.findOne({
       job: jobId,
-      applicant: req.user._id,
+      applicant: req.user.id,
     });
 
     if (existingApplication) {
@@ -15,7 +15,7 @@ const applyToJob = async (req, res) => {
 
     const application = await Application.create({
       job: jobId,
-      applicant: req.user._id,
+      applicant: req.user.id,
       resume: req.file.path,
       coverLetter: req.body.coverLetter,
     });
@@ -32,7 +32,7 @@ const applyToJob = async (req, res) => {
 const getMyApplication = async (req, res) => {
   try {
     const application = await Application.find({
-      applicant: req.user._id,
+      applicant: req.user.id,
     }).populate("job");
 
     res.status(201).json({

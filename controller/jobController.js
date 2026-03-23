@@ -11,7 +11,7 @@ exports.createJob = async (req, res) => {
       location,
       salary,
       jobType,
-      postedBy: req.user._id,
+      postedBy: req.user.id,
     });
 
     res.status(201).json({ message: "Job created successfully", job });
@@ -29,7 +29,7 @@ exports.deleteJob = async (req, res) => {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    if (job.postedBy.toString() !== req.user._id.toString()) {
+    if (job.postedBy.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -50,7 +50,7 @@ exports.updateJob = async (req, res) => {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    if (job.postedBy.toString() !== req.user._id.toString()) {
+    if (job.postedBy.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -67,7 +67,7 @@ exports.updateJob = async (req, res) => {
 
 exports.jobCreatedByEmployer = async (req, res) => {
   try {
-    const job = await Job.find({ postedBy: req.user._id }).sort({
+    const job = await Job.find({ postedBy: req.user.id }).sort({
       createdAt: -1,
     });
 
@@ -86,7 +86,7 @@ exports.getSingleEmployerJob = async (req, res) => {
       return res.status(404).json({ message: "Job not found!" });
     }
 
-    if (job.postedBy.toString() !== req.user._id.toString()) {
+    if (job.postedBy.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -99,7 +99,7 @@ exports.getSingleEmployerJob = async (req, res) => {
 
 exports.employerStats = async (req, res) => {
   try {
-    const job = await Job.find({ postedBy: req.user._id });
+    const job = await Job.find({ postedBy: req.user.id });
 
     const totalJobs = job.length;
 
