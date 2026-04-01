@@ -61,6 +61,19 @@ const jobSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    category: {
+      type: String,
+      required: true,
+      enum: [
+        "Tech",
+        "Marketing",
+        "Design",
+        "Finance",
+        "Sales",
+        "HR",
+        "Operations",
+      ],
+    },
   },
   { timestamps: true },
 );

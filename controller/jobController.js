@@ -187,3 +187,20 @@ exports.getAllJobs = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getCategoryStats = async (req, res) => {
+  try {
+    const stats = await Job.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    res.status(200).json(stats);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};

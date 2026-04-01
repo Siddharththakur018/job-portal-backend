@@ -8,6 +8,7 @@ const {
   getSingleEmployerJob,
   employerStats,
   getAllJobs,
+  getCategoryStats
 } = require("../controller/jobController");
 
 const {
@@ -58,5 +59,7 @@ router.get(
   authorizeRoles("employer"),
   employerStats
 );
+
+router.get("/category-stats", getCategoryStats);
 
 module.exports = router;
